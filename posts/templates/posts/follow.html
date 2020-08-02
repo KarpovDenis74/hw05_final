@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block header %}
+<p>Посты, на которые подписан {{ user.username }}</p>
+{% endblock %}
+{% block title %} Подписки {{ user.username }} {% endblock %}
+{% block content %}
+{% load thumbnail %}
+<div class="container">
+
+{% include "menu.html" with index=True %}
+{% for post in page %}
+    {% include "posts/post_item.html" with post=post %}
+    {% if not forloop.last %}
+    <hr>
+    {% endif %}
+{% endfor %}
+
+{% if page.has_other_pages %}
+    {% include "paginator.html" with items=page paginator=paginator %}
+{% endif %}
+****
+</div>
+
+{% endblock %}
