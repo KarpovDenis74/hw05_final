@@ -31,7 +31,7 @@ def profile(request, username):
 
 def post_view(request, username, post_id):
     post = get_object_or_404(Post, author__username=username, id=post_id)
-    count = Post.objects.filter(author__username=username).count
+    count = post.author.posts.count()
     form = CommentForm()
     items = Comment.objects.select_related('author',
         'post').filter(post_id=post_id)
@@ -148,8 +148,7 @@ def server_error(request):
 
 @login_required
 def follow_index(request):
-    post = Post.objects.filter(
-        author__following__in=Follow.objects.filter(user=request.user))
+    post = Post.objects.filter(author__following__user=request.user)
     paginator = Paginator(post, 10)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
@@ -162,8 +161,8 @@ def follow_index(request):
 @login_required
 def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
-    follow = Follow.objects.filter(user=request.user, author=author).count()
-    if request.user.username != username and follow < 1:
+    follow = Follow.objects.filter(user=request.user, author=author).exists()
+    if request.user.username != username and not follow:
         Follow.objects.create(user=request.user, author=author)
     return redirect('follow_index')
 
