@@ -54,7 +54,8 @@ def new_post(request):
         return render(request, 'posts/new_post.html',
             {'context': context, 'form': form}
         )
-    form = PostForm(request.POST)
+    form = PostForm(request.POST or None,
+                    files=request.FILES or None)
     if not form.is_valid():
         return render(request,
             'posts/new_post.html', {'context': context, 'form': form}
